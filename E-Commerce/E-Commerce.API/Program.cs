@@ -1,19 +1,23 @@
 
+using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Persistence;
 using Persistence.Data;
 
 namespace E_Commerce.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IDbInitializer,DbInitializer>();
+
 
             builder.Services.AddDbContext<StoreContext>(options=> 
             {
@@ -24,6 +28,7 @@ namespace E_Commerce.API
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+            await InitializeDbAsync(app);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -40,6 +45,13 @@ namespace E_Commerce.API
             app.MapControllers();
 
             app.Run();
+        async Task InitializeDbAsync(WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+            var DbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+            await DbInitializer.InitilaizeAsync();
         }
+        }
+
     }
 }
