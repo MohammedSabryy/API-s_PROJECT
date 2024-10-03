@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Services.Specifications;
 
 namespace Services
 {
@@ -22,7 +23,7 @@ namespace Services
 
         public async Task<IEnumerable<ProductResultDTO>> GetAllProductsAsync()
         {
-            var Products = await UnitOfWork.GetRepository<Product, int>().GetAllAsync();
+            var Products = await UnitOfWork.GetRepository<Product, int>().GetAllAsync(new ProductWithBrandAndTypeSpecifications());
             var ProductResult = Mapper.Map<IEnumerable<ProductResultDTO>>(Products);
             return ProductResult;
         }
@@ -36,7 +37,7 @@ namespace Services
 
         public async Task<ProductResultDTO?> GetProductByIdAsync(int id)
         {
-            var Product = await UnitOfWork.GetRepository<Product, int>().GetAsync(id);
+            var Product = await UnitOfWork.GetRepository<Product, int>().GetAsync(new ProductWithBrandAndTypeSpecifications(id));
             var ProductResult = Mapper.Map<ProductResultDTO>(Product);
             return ProductResult;
         }
