@@ -4,8 +4,8 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Text;
 global using System.Threading.Tasks;
-using Persistence.Data;
-using System.Text.Json;
+global using Persistence.Data;
+global using System.Text.Json;
 
 namespace Persistence
 {
