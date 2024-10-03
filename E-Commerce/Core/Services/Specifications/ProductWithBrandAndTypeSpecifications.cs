@@ -18,12 +18,33 @@ namespace Services.Specifications
         }
 
 
-        public ProductWithBrandAndTypeSpecifications()
-           : base(null)
+        public ProductWithBrandAndTypeSpecifications(string? sort,int? brandId,int? typeId)
+           : base(product=>(!brandId.HasValue ||product.BrandId == brandId.Value) 
+           &&
+           (!typeId.HasValue || product.TypeId == typeId.Value))
         {
             AddInclude(Product => Product.ProductBrand);
             AddInclude(Product => Product.ProductType);
 
+
+            if (!string.IsNullOrEmpty(sort))
+            {
+                switch (sort.ToLower().Trim()) 
+                {
+                    case "pricedesc":
+                        SetOrderByDescending(p=>p.price);
+                        break;
+                    case "priceasc":
+                        SetOrderBy(p => p.price);
+                        break;
+                    case "namedesc":
+                        SetOrderByDescending(p => p.Name);
+                        break;
+                    default:
+                        SetOrderBy(p => p.Name);
+                        break;
+                }
+            }
         }
     }
 }
