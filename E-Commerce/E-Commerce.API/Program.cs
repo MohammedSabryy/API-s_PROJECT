@@ -4,6 +4,8 @@ global using Microsoft.Extensions.Options;
 global using Persistence;
 global using Persistence.Data;
 global using AutoMapper;
+using Services.Abstractions;
+using Services;
 
 namespace E_Commerce.API
 {
@@ -15,9 +17,11 @@ namespace E_Commerce.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddApplicationPart(typeof(Presentation.AssembelyReference).Assembly);
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddScoped<IUnitOfWork,IUnitOfWork>();
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
+
 
             builder.Services.AddAutoMapper(typeof(Services.AssembleyReference).Assembly);
             builder.Services.AddDbContext<StoreContext>(options=> 
