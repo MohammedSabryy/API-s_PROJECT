@@ -6,6 +6,7 @@ global using Persistence.Data;
 global using AutoMapper;
 using Services.Abstractions;
 using Services;
+using Persistence.Repositories;
 
 namespace E_Commerce.API
 {
@@ -19,7 +20,7 @@ namespace E_Commerce.API
 
             builder.Services.AddControllers().AddApplicationPart(typeof(Presentation.AssembelyReference).Assembly);
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-            builder.Services.AddScoped<IUnitOfWork,IUnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
 
@@ -54,7 +55,7 @@ namespace E_Commerce.API
             async Task InitializeDbAsync(WebApplication app)
             {
                 using var scope = app.Services.CreateScope();
-                var DbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+                var DbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
                 await DbInitializer.InitilaizeAsync();
             }
         }
