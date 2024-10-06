@@ -1,9 +1,12 @@
-
-using Domain.Contracts;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Persistence;
-using Persistence.Data;
+global using Domain.Contracts;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Options;
+global using Persistence;
+global using Persistence.Data;
+global using AutoMapper;
+using Services.Abstractions;
+using Services;
+using Persistence.Repositories;
 
 namespace E_Commerce.API
 {
@@ -15,10 +18,13 @@ namespace E_Commerce.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
-            builder.Services.AddScoped<IDbInitializer,DbInitializer>();
+            builder.Services.AddControllers().AddApplicationPart(typeof(Presentation.AssembelyReference).Assembly);
+            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+            builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
 
+            builder.Services.AddAutoMapper(typeof(Services.AssembleyReference).Assembly);
             builder.Services.AddDbContext<StoreContext>(options=> 
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
@@ -37,6 +43,7 @@ namespace E_Commerce.API
                 app.UseSwaggerUI();
             }
 
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
@@ -45,12 +52,12 @@ namespace E_Commerce.API
             app.MapControllers();
 
             app.Run();
-        async Task InitializeDbAsync(WebApplication app)
-        {
-            using var scope = app.Services.CreateScope();
-            var DbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-            await DbInitializer.InitilaizeAsync();
-        }
+            async Task InitializeDbAsync(WebApplication app)
+            {
+                using var scope = app.Services.CreateScope();
+                var DbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                await DbInitializer.InitilaizeAsync();
+            }
         }
 
     }
