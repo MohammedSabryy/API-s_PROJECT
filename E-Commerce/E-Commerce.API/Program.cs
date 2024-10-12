@@ -8,6 +8,8 @@ using Services.Abstractions;
 using Services;
 using Persistence.Repositories;
 using E_Commerce.API.Middlewares;
+using Microsoft.AspNetCore.Mvc;
+using E_Commerce.API.Factories;
 
 namespace E_Commerce.API
 {
@@ -29,6 +31,11 @@ namespace E_Commerce.API
             builder.Services.AddDbContext<StoreContext>(options=> 
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
+            });
+
+            builder.Services.Configure<ApiBehaviorOptions>(options => 
+            {
+                options.InvalidModelStateResponseFactory = ApiResponseFactory.CustomValidationErrorResponse;
             });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
