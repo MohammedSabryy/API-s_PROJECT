@@ -7,6 +7,7 @@ global using AutoMapper;
 using Services.Abstractions;
 using Services;
 using Persistence.Repositories;
+using E_Commerce.API.Middlewares;
 
 namespace E_Commerce.API
 {
@@ -34,6 +35,8 @@ namespace E_Commerce.API
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
             await InitializeDbAsync(app);
 
             // Configure the HTTP request pipeline.
