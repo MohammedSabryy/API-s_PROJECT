@@ -4,13 +4,13 @@ global using Microsoft.Extensions.Options;
 global using Persistence;
 global using Persistence.Data;
 global using AutoMapper;
-using Services.Abstractions;
-using Services;
-using Persistence.Repositories;
-using E_Commerce.API.Middlewares;
-using Microsoft.AspNetCore.Mvc;
-using E_Commerce.API.Factories;
-using E_Commerce.API.Extensions;
+global using Services.Abstractions;
+global using Services;
+global using Persistence.Repositories;
+global using E_Commerce.API.Middlewares;
+global using Microsoft.AspNetCore.Mvc;
+global using E_Commerce.API.Factories;
+global using E_Commerce.API.Extensions;
 
 namespace E_Commerce.API
 {
