@@ -9,6 +9,7 @@ namespace Services.Specifications
 {
     internal class ProductWithBrandAndTypeSpecifications : Specifications<Product>
     {
+        
         public ProductWithBrandAndTypeSpecifications(int id)
             : base(Product=>Product.Id == id)
         {
@@ -18,26 +19,28 @@ namespace Services.Specifications
         }
 
 
-        public ProductWithBrandAndTypeSpecifications(string? sort,int? brandId,int? typeId)
-           : base(product=>(!brandId.HasValue ||product.BrandId == brandId.Value) 
+        public ProductWithBrandAndTypeSpecifications(ProductSpecificationsParameters parameters)
+           : base(product=>
+           (!parameters.BrandId.HasValue ||product.BrandId == parameters.BrandId.Value) 
            &&
-           (!typeId.HasValue || product.TypeId == typeId.Value))
+           (!parameters.TypeId.HasValue || product.TypeId == parameters.TypeId.Value)
+            &&(string.IsNullOrWhiteSpace(parameters.Search) || product.Name.ToLower().Contains(parameters.Search.ToLower().Trim())))
         {
             AddInclude(Product => Product.ProductBrand);
             AddInclude(Product => Product.ProductType);
 
-
-            if (!string.IsNullOrEmpty(sort))
+            ApplyPagination(parameters.PageIndex,parameters.PageSize);
+            if (parameters.Sort != null)
             {
-                switch (sort.ToLower().Trim()) 
+                switch (parameters.Sort) 
                 {
-                    case "pricedesc":
+                    case ProductSortingOptions.PriceDesc:
                         SetOrderByDescending(p=>p.price);
                         break;
-                    case "priceasc":
+                    case ProductSortingOptions.PriceAsc:
                         SetOrderBy(p => p.price);
                         break;
-                    case "namedesc":
+                    case ProductSortingOptions.NameDesc:
                         SetOrderByDescending(p => p.Name);
                         break;
                     default:

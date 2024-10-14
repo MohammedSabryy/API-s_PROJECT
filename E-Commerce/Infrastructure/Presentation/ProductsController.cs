@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Shared;
+using Shared.ErrorModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +16,9 @@ namespace Presentation
     public class ProductsController(IServiceManager ServiceManager) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductResultDTO>>> GetAllProducts(string? sort, int brandId, int? typeId)
+        public async Task<ActionResult<PaginatedResult<ProductResultDTO>>> GetAllProducts([FromQuery]ProductSpecificationsParameters parameters)
         {
-            var Products =await ServiceManager.ProductService.GetAllProductsAsync(sort,brandId,typeId);
+            var Products =await ServiceManager.ProductService.GetAllProductsAsync(parameters);
             return Ok(Products);
         }
 
@@ -34,6 +36,9 @@ namespace Presentation
             return Ok(Types);
         }
 
+        [ProducesResponseType(typeof(ErrorDetails),(int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ErrorDetails), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ValidationErrorResponse),(int)HttpStatusCode.BadRequest)]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductResultDTO>> GetProduct(int id)
         {
