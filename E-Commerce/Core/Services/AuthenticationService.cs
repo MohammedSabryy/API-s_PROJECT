@@ -1,6 +1,8 @@
 ﻿global using Domain.Entities;
 global using Microsoft.AspNetCore.Identity;
 using Domain.Exceptions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    internal class AuthenticationService(UserManager<User> UserManager) : IAuthenticationService
+    internal class AuthenticationService(UserManager<User> UserManager , IOptions<JwtOptions> options) : IAuthenticationService
     { 
         public async Task<UserResultDTO> LoginAsync(LoginDTO loginModel)
         {
@@ -31,6 +33,7 @@ namespace Services
 
         public async Task<UserResultDTO> RegisterAsync(UserRegisterDTO registerModel)
         {
+            
             var user = new User()
             {
                 DisplayName = registerModel.DisplayName,
@@ -54,6 +57,7 @@ namespace Services
 
         private async Task<string> CreateTokenAsync(User user)
         {
+            var jwtOptions = options.Value; 
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name,user.UserName!),
@@ -64,12 +68,12 @@ namespace Services
             foreach (var role in roles)
                 authClaims.Add(new Claim(ClaimTypes.Role,role));
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("x+7hPN9lfVvXdTYknzokbkRy7JsLHCe8FeXcF3hQe5U="));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey));
             var signingCreds = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
-                audience: "MyAudience",
-                issuer: "https://localhost:5001",
-                expires:DateTime.UtcNow.AddDays(30),
+                audience: jwtOptions.Audience,
+                issuer: jwtOptions.Issure,
+                expires:DateTime.UtcNow.AddDays(jwtOptions.DurationInDays),
                 claims:authClaims,
                 signingCredentials:signingCreds
                 );

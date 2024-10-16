@@ -22,7 +22,7 @@ namespace E_Commerce.API
 
             // Add services to the container.
             #region Services
-            builder.Services.AddCoreServices();
+            builder.Services.AddCoreServices(builder.Configuration);
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddPresentationServices();
             #endregion
@@ -42,6 +42,7 @@ namespace E_Commerce.API
 
             app.UseStaticFiles();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

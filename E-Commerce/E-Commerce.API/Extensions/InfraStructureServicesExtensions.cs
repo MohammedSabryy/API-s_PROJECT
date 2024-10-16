@@ -7,6 +7,10 @@ global using StackExchange.Redis;
 global using Persistence.Identity;
 global using Microsoft.AspNetCore.Identity;
 global using Domain.Entities;
+global using Microsoft.IdentityModel.Tokens;
+using Shared;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 
 namespace E_Commerce.API.Extensions
 {
@@ -31,6 +35,7 @@ namespace E_Commerce.API.Extensions
             services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer
             .Connect(configuration.GetConnectionString("Redis")!));
             services.ConfigureIdentityService();
+            services.ConfigureJwt(configuration);
             return services;
         }
 
@@ -46,6 +51,32 @@ namespace E_Commerce.API.Extensions
                 options.User.RequireUniqueEmail = true;
 
             }).AddEntityFrameworkStores<StoreIdentityContext>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureJwt(this IServiceCollection services , IConfiguration configuration)
+        {
+            var jwtOptions = configuration.GetSection("jwtOptions").Get<JwtOptions>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options=>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtOptions.Issure,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+                };
+
+            });
+            services.AddAuthorization();
             return services;
         }
     }
