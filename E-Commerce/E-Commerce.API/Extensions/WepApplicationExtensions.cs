@@ -9,6 +9,7 @@ namespace E_Commerce.API.Extensions
             using var scope = app.Services.CreateScope();
             var DbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
             await DbInitializer.InitilaizeAsync();
+            await DbInitializer.InitilaizeIdentityAsync();
             return app;
         }
 
