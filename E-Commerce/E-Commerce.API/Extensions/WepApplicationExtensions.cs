@@ -1,7 +1,7 @@
 ﻿using E_Commerce.API.Middlewares;
 
 namespace E_Commerce.API.Extensions
-{
+{ 
     public static class WepApplicationExtensions
     {
         public static async Task<WebApplication> SeedDbAsync(this WebApplication app)
@@ -9,6 +9,7 @@ namespace E_Commerce.API.Extensions
             using var scope = app.Services.CreateScope();
             var DbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
             await DbInitializer.InitilaizeAsync();
+            await DbInitializer.InitilaizeIdentityAsync();
             return app;
         }
 
