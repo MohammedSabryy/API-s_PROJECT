@@ -7,6 +7,7 @@ global using System.Threading.Tasks;
 global using Persistence.Data;
 global using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
+using Domain.Entities.Identity;
 
 namespace Persistence
 {
@@ -68,6 +69,19 @@ namespace Persistence
                     if (Products != null && Products.Any())
                     {
                         await _storeContext.Products.AddRangeAsync(Products);
+                        await _storeContext.SaveChangesAsync();
+                    }
+                }
+
+                if (!_storeContext.Products.Any())
+                {
+                    var data = await File.ReadAllTextAsync(@"..\Infrastructure\Persistence\Data\Seeding\delivery.json");
+
+                    var methods = JsonSerializer.Deserialize<List<DeliveryMethod>>(data);
+
+                    if (methods != null && methods.Any())
+                    {
+                        await _storeContext.DeliveryMethods.AddRangeAsync(methods);
                         await _storeContext.SaveChangesAsync();
                     }
                 }

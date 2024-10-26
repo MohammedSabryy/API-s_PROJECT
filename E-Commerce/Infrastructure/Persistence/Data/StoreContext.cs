@@ -1,5 +1,7 @@
 ﻿global using Microsoft.EntityFrameworkCore;
 global using Domain.Entities;
+global using OrderEntity =  Domain.Entities.OrderEntities.Order;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,12 @@ namespace Persistence.Data
         public DbSet<Product> Products{ get; set; }
         public DbSet<ProductBrand> ProductBrands { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
+        public DbSet<OrderEntity> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(StoreContext).Assembly);

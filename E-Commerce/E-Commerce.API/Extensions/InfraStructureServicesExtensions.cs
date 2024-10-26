@@ -11,6 +11,7 @@ global using Microsoft.IdentityModel.Tokens;
 using Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Domain.Entities.Identity;
 
 namespace E_Commerce.API.Extensions
 {
